@@ -3,13 +3,15 @@
 /*
  * ecran_securite.php
  * ------------------
- *
- * version 0.5
- * 15 avril 2009.
- *
- * Ce petit script peut etre inclus automatiquement, soit dans
- * ecrire/mes_options.php soit avec la commande auto_prepend_file dans
- * php.ini ; il essaie de mettre un ecran devant certains des trous de
+ */
+
+define('_ECRAN_SECURITE', '0.6'); // 27 juillet 2009
+
+/*
+ * Ce petit script est inclus automatiquement par SPIP s'il est present
+ * dans le repertoire config/ ; il peut aussi etre inclus pour tous les
+ * codes php, avec la commande auto_prepend_file dans php.ini
+ * Il essaie de mettre un ecran devant certains des trous de
  * securite connus d'anciennes versions de SPIP (et qui ont ete bouches dans
  * les versions officielles).
  *
@@ -19,6 +21,10 @@
  *
  * Installation :
  *
+ * trois possibilites :
+ *
+ * -- deposer le fichier ecran_securite.php dans le repertoire config/ ;
+ *
  * -- dans php.ini :
  *    auto_prepend_file '/chemin/vers/ecran_securite.php'
  *    (exemple: /usr/share/php/ecran_securite/ecran_securite.php)
@@ -26,12 +32,14 @@
  * -- dans httpd.conf :
  *    php_admin_value auto_prepend_file '/chemin/vers/ecran_securite.php'
  *
- * -- soit deposer le fichier ecran_securite.php dans le repertoire ecrire/
- *    dans ce meme repertoire, ouvrir ou creer le fichier mes_options.php et y
- *    inserer l'instruction suivante :
- *     <?php include(dirname(__FILE__).'/ecran_securite.php'); ? >
- *
  * Le fichier ecran_securite.php sera charge a chaque "hit" sur le serveur.
+ *
+ *
+ * L'ecran de securite reagit aux reglages suivants :
+ *
+ * -- define('_ECRAN_SECURITE_LOAD', X);
+ *    protection anti-bots quand la charge serveur excede X
+ *    valeur par defaut : 4 ; desactiver : 0
  *
  */
 
@@ -137,3 +145,32 @@ function tmp_lkojfghx2($a=0,$b=0,$c=0,$d=0){
 }
 }
 if (isset($_POST['tmp_lkojfghx3'])){	die();}
+
+
+/*
+ * Bloque les bots quand le load deborde
+ *
+ */
+define('_ECRAN_SECURITE_LOAD', 4);
+if (
+defined('_ECRAN_SECURITE_LOAD')
+AND _ECRAN_SECURITE_LOAD>0
+AND $_SERVER['REQUEST_METHOD'] === 'GET'
+AND strpos($_SERVER['HTTP_USER_AGENT'], 'bot')
+AND (
+  (function_exists('sys_getloadavg') AND $load = array_shift(sys_getloadavg()))
+  OR (@is_readable('/proc/loadavg') AND $load = floatval(file_get_contents('/proc/loadavg')))
+)
+AND rand(0, $load*$load) > _ECRAN_SECURITE_LOAD*_ECRAN_SECURITE_LOAD
+)
+{
+	header("HTTP/1.0 503 Service Unavailable");
+	header("Retry-After: 300");
+	header("Expires: 0");
+	header("Cache-Control: no-cache, must-revalidate");
+	header("Pragma: no-cache");
+	header("Content-Type: text/html");
+	die("<html><title>Error 503: Site temporarily unavailable</title><body><h1>Error 503</h1><p>Site temporarily unavailable (load average $load)</p></body></html>");
+}
+
+
