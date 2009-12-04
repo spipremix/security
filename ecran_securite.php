@@ -24,7 +24,8 @@ if (isset($_GET['test_ecran_securite']))
 if (!defined('_IS_BOT'))
 	define('_IS_BOT',
 		isset($_SERVER['HTTP_USER_AGENT'])
-		AND strpos(strtolower($_SERVER['HTTP_USER_AGENT']), 'bot') !== false
+		AND preg_match(', bot|slurp|crawler|spider|webvac|yandex,i',
+			$_SERVER['HTTP_USER_AGENT'])
 	);
 
 /*     - interdit de passer une variable id_article (ou id_xxx) qui ne
