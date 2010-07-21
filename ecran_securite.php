@@ -119,7 +119,7 @@ if (isset($_REQUEST['page']) AND $_REQUEST['page']=='test_cfg')
  * XSS par array
  */
 foreach (array('var_login') as $ecran_securite_i)
-if (isset($_REQUEST[$k]) AND is_array($_REQUEST[$ecran_securite_i]))
+if (isset($_REQUEST[ $ecran_securite_i]) AND is_array($_REQUEST[$ecran_securite_i]))
 	$ecran_securite_raison = "xss ".$ecran_securite_i;
 
 /* Parade antivirale contre un cheval de troie */
