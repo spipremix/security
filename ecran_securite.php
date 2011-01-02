@@ -5,7 +5,7 @@
  * ------------------
  */
 
-define('_ECRAN_SECURITE', '0.9.4'); // 2 janv 2010
+define('_ECRAN_SECURITE', '0.9.5'); // 2 janv 2010
 
 /*
  * Documentation : http://www.spip.net/fr_article4200.html
@@ -137,9 +137,14 @@ if (_IS_BOT AND (
 
 /*
  * Bloque une vieille page de tests de CFG (<1.11)
+ * Bloque un XSS sur une page inexistante
  */
-if (isset($_REQUEST['page']) AND $_REQUEST['page']=='test_cfg')
-	$ecran_securite_raison = "test_cfg";
+if (isset($_REQUEST['page'])) {
+	if ($_REQUEST['page']=='test_cfg')
+		$ecran_securite_raison = "test_cfg";
+	if ($_REQUEST['page'] !== htmlspecialchars($_REQUEST['page']))
+		$ecran_securite_raison = "xsspage";
+}
 
 /*
  * XSS par array
