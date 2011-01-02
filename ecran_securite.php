@@ -5,7 +5,7 @@
  * ------------------
  */
 
-define('_ECRAN_SECURITE', '0.9.3'); // 21 juil 2010
+define('_ECRAN_SECURITE', '0.9.4'); // 2 janv 2010
 
 /*
  * Documentation : http://www.spip.net/fr_article4200.html
@@ -74,6 +74,32 @@ AND $_REQUEST['partie_cal'] !== htmlentities($_REQUEST['partie_cal']))
 if (isset($_REQUEST['echelle'])
 AND $_REQUEST['echelle'] !== htmlentities($_REQUEST['echelle']))
 	$ecran_securite_raison = "echelle";
+
+/*
+ *     - espace prive
+ */
+if (isset($_REQUEST['exec'])
+AND !preg_match(',^\w+$,', $_REQUEST['exec']))
+	$ecran_securite_raison = "exec";
+if (isset($_REQUEST['cherche_auteur'])
+AND preg_match(',[<],', $_REQUEST['cherche_auteur']))
+	$ecran_securite_raison = "cherche_auteur";
+if (isset($_REQUEST['action'])
+AND $_REQUEST['action'] == 'configurer') {
+	if (@file_exists('inc_version.php')
+	OR @file_exists('ecrire/inc_version.php')) {
+		function action_configurer() {
+			include_spip('inc/autoriser');
+			if(!autoriser('configurer', _request('configuration'))) {
+				include_spip('inc/minipres');
+				echo minipres(_T('info_acces_interdit'));
+				exit;
+			}
+			require _DIR_RESTREINT.'action/configurer.php';
+			action_configurer_dist();
+		}
+	}
+}
 
 /*     - bloque les requetes contenant %00 (manipulation d'include)
  *
