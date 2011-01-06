@@ -5,7 +5,7 @@
  * ------------------
  */
 
-define('_ECRAN_SECURITE', '0.9.5'); // 2 janv 2011
+define('_ECRAN_SECURITE', '0.9.6'); // 6 janv 2011
 
 /*
  * Documentation : http://www.spip.net/fr_article4200.html
@@ -25,7 +25,7 @@ if (!defined('_IS_BOT'))
 	define('_IS_BOT',
 		isset($_SERVER['HTTP_USER_AGENT'])
 		AND preg_match(',bot|slurp|crawler|spider|webvac|yandex,i',
-			$_SERVER['HTTP_USER_AGENT'])
+			(string) $_SERVER['HTTP_USER_AGENT'])
 	);
 
 /*     - interdit de passer une variable id_article (ou id_xxx) qui ne
@@ -35,13 +35,13 @@ if (!defined('_IS_BOT'))
  */
 foreach ($_GET as $var => $val)
 	if (strncmp($var,"id_",3)==0 AND $var!='id_table')
-		$_GET[$var] = is_array($_GET[$var])?array_map('intval',$_GET[$var]):intval($_GET[$var]);
+		$_GET[$var] = is_array($_GET[$var])?@array_map('intval',$_GET[$var]):intval($_GET[$var]);
 foreach ($_POST as $var => $val)
 	if (strncmp($var,"id_",3)==0 AND $var!='id_table')
-		$_POST[$var] = is_array($_POST[$var])?array_map('intval',$_POST[$var]):intval($_POST[$var]);
+		$_POST[$var] = is_array($_POST[$var])?@array_map('intval',$_POST[$var]):intval($_POST[$var]);
 foreach ($GLOBALS as $var => $val)
 	if (strncmp($var,"id_",3)==0 AND $var!='id_table')
-		$GLOBALS[$var] = is_array($GLOBALS[$var])?array_map('intval',$GLOBALS[$var]):intval($GLOBALS[$var]);
+		$GLOBALS[$var] = is_array($GLOBALS[$var])?@array_map('intval',$GLOBALS[$var]):intval($GLOBALS[$var]);
 
 
 /*     - interdit la variable $cjpeg_command, qui etait utilisee sans
@@ -54,35 +54,35 @@ $cjpeg_command='';
  *
  */
 if (isset($_GET['lang']))
-	$GLOBALS['lang'] = $_GET['lang'] = htmlentities($_GET['lang']);
+	$GLOBALS['lang'] = $_GET['lang'] = htmlentities((string)$_GET['lang']);
 if (isset($_POST['lang']))
-	$GLOBALS['lang'] = $_POST['lang'] = htmlentities($_POST['lang']);
+	$GLOBALS['lang'] = $_POST['lang'] = htmlentities((string)$_POST['lang']);
 
 /*     - filtre l'acces a spip_acces_doc (injection SQL en 1.8.2x)
  *
  */
-if (preg_match(',^(.*/)?spip_acces_doc\.,', $REQUEST_URI)) {
-	$file = addslashes($_GET['file']);
+if (preg_match(',^(.*/)?spip_acces_doc\.,', (string)$REQUEST_URI)) {
+	$file = addslashes((string)$_GET['file']);
 }
 
 /*
  *     - agenda joue a l'injection php
  */
 if (isset($_REQUEST['partie_cal'])
-AND $_REQUEST['partie_cal'] !== htmlentities($_REQUEST['partie_cal']))
+AND $_REQUEST['partie_cal'] !== htmlentities((string)$_REQUEST['partie_cal']))
 	$ecran_securite_raison = "partie_cal";
 if (isset($_REQUEST['echelle'])
-AND $_REQUEST['echelle'] !== htmlentities($_REQUEST['echelle']))
+AND $_REQUEST['echelle'] !== htmlentities((string)$_REQUEST['echelle']))
 	$ecran_securite_raison = "echelle";
 
 /*
  *     - espace prive
  */
 if (isset($_REQUEST['exec'])
-AND !preg_match(',^\w+$,', $_REQUEST['exec']))
+AND !preg_match(',^\w+$,', (string)$_REQUEST['exec']))
 	$ecran_securite_raison = "exec";
 if (isset($_REQUEST['cherche_auteur'])
-AND preg_match(',[<],', $_REQUEST['cherche_auteur']))
+AND preg_match(',[<],', (string)$_REQUEST['cherche_auteur']))
 	$ecran_securite_raison = "cherche_auteur";
 if (isset($_REQUEST['action'])
 AND $_REQUEST['action'] == 'configurer') {
@@ -130,7 +130,7 @@ if (isset($_REQUEST['GLOBALS']))
  */
 if (_IS_BOT AND (
 	(isset($_REQUEST['echelle']) AND isset($_REQUEST['partie_cal']) AND isset($_REQUEST['type']))
-	OR (strpos($_SERVER['REQUEST_URI'],'debut_') AND preg_match(',[?&]debut_.*&debut_,', $_SERVER['REQUEST_URI']))
+	OR (strpos((string)$_SERVER['REQUEST_URI'],'debut_') AND preg_match(',[?&]debut_.*&debut_,', (string)$_SERVER['REQUEST_URI']))
 )
 )
 	$ecran_securite_raison = "robot agenda/double pagination";
@@ -142,7 +142,7 @@ if (_IS_BOT AND (
 if (isset($_REQUEST['page'])) {
 	if ($_REQUEST['page']=='test_cfg')
 		$ecran_securite_raison = "test_cfg";
-	if ($_REQUEST['page'] !== htmlspecialchars($_REQUEST['page']))
+	if ($_REQUEST['page'] !== htmlspecialchars((string)$_REQUEST['page']))
 		$ecran_securite_raison = "xsspage";
 }
 
@@ -176,10 +176,10 @@ if (isset($_REQUEST['transformer_xml']))
  * Sauvegarde mal securisee < 2.0.9
  */
 if (isset($_REQUEST['nom_sauvegarde'])
-AND strstr($_REQUEST['nom_sauvegarde'], '/'))
+AND strstr((string)$_REQUEST['nom_sauvegarde'], '/'))
 	$ecran_securite_raison = 'nom_sauvegarde manipulee';
 if (isset($_REQUEST['znom_sauvegarde'])
-AND strstr($_REQUEST['znom_sauvegarde'], '/'))
+AND strstr((string)$_REQUEST['znom_sauvegarde'], '/'))
 	$ecran_securite_raison = 'znom_sauvegarde manipulee';
 
 
