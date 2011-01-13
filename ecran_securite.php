@@ -5,7 +5,7 @@
  * ------------------
  */
 
-define('_ECRAN_SECURITE', '0.9.6'); // 6 janv 2011
+define('_ECRAN_SECURITE', '0.9.7'); // 13 janv 2011
 
 /*
  * Documentation : http://www.spip.net/fr_article4200.html
@@ -182,6 +182,14 @@ if (isset($_REQUEST['znom_sauvegarde'])
 AND strstr((string)$_REQUEST['znom_sauvegarde'], '/'))
 	$ecran_securite_raison = 'znom_sauvegarde manipulee';
 
+
+/*
+ * op, lang, permettent des inclusions arbitraires
+ */
+foreach (array('op','lang') as $var)
+if (isset($_REQUEST[$var])
+AND $_REQUEST[$var] !== preg_replace('/\W/', '', $_REQUEST[$var]))
+	$ecran_securite_raison = "$var";
 
 
 /*
