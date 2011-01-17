@@ -5,7 +5,7 @@
  * ------------------
  */
 
-define('_ECRAN_SECURITE', '0.9.7'); // 13 janv 2011
+define('_ECRAN_SECURITE', '0.9.8'); // 17 janv 2011
 
 /*
  * Documentation : http://www.spip.net/fr_article4200.html
@@ -188,7 +188,7 @@ AND strstr((string)$_REQUEST['znom_sauvegarde'], '/'))
  */
 foreach (array('op','lang') as $var)
 if (isset($_REQUEST[$var])
-AND $_REQUEST[$var] !== preg_replace('/\W/', '', $_REQUEST[$var]))
+AND $_REQUEST[$var] !== preg_replace('/[^\-\w]/', '', $_REQUEST[$var]))
 	$ecran_securite_raison = "$var";
 
 
