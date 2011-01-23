@@ -5,7 +5,7 @@
  * ------------------
  */
 
-define('_ECRAN_SECURITE', '0.9.8'); // 17 janv 2011
+define('_ECRAN_SECURITE', '0.9.9'); // 23 janv 2011
 
 /*
  * Documentation : http://www.spip.net/fr_article4200.html
@@ -50,13 +50,14 @@ foreach ($GLOBALS as $var => $val)
  */
 $cjpeg_command='';
 
-/*     - controle la variable $lang (XSS)
+/*     - controle la variable lang, var_recherche (XSS)
  *
  */
-if (isset($_GET['lang']))
-	$GLOBALS['lang'] = $_GET['lang'] = htmlentities((string)$_GET['lang']);
-if (isset($_POST['lang']))
-	$GLOBALS['lang'] = $_POST['lang'] = htmlentities((string)$_POST['lang']);
+foreach(array('lang', 'var_recherche') as $ecran_securite_i)
+if (isset($_GET[$ecran_securite_i]))
+	$_REQUEST[$ecran_securite_i] = $GLOBALS[$ecran_securite_i] = $_GET[$ecran_securite_i] = preg_replace(',[^\w-]+,',' ',(string)$_GET[$ecran_securite_i]);
+if (isset($_POST[$ecran_securite_i]))
+	$_REQUEST[$ecran_securite_i] = $GLOBALS[$ecran_securite_i] = $_POST[$ecran_securite_i] = preg_replace(',[^\w-]+,',' ',(string)$_POST[$ecran_securite_i]);
 
 /*     - filtre l'acces a spip_acces_doc (injection SQL en 1.8.2x)
  *
@@ -184,13 +185,12 @@ AND strstr((string)$_REQUEST['znom_sauvegarde'], '/'))
 
 
 /*
- * op, lang, permettent des inclusions arbitraires
+ * op permet des inclusions arbitraires ;
+ * on verifie 'page' pour ne pas bloquer ... drupal
  */
-foreach (array('op','lang') as $var)
-if (isset($_REQUEST[$var])
-AND $_REQUEST[$var] !== preg_replace('/[^\-\w]/', '', $_REQUEST[$var]))
-	$ecran_securite_raison = "$var";
-
+if (isset($_REQUEST['op']) AND isset($_REQUEST['page'])
+AND $_REQUEST['op'] !== preg_replace('/[^\-\w]/', '', $_REQUEST['op']))
+	$ecran_securite_raison = 'op';
 
 /*
  * S'il y a une raison de mourir, mourons
