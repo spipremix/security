@@ -53,11 +53,12 @@ $cjpeg_command='';
 /*     - controle la variable lang, var_recherche (XSS)
  *
  */
-foreach(array('lang', 'var_recherche') as $ecran_securite_i)
-if (isset($_GET[$ecran_securite_i]))
-	$_REQUEST[$ecran_securite_i] = $GLOBALS[$ecran_securite_i] = $_GET[$ecran_securite_i] = preg_replace(',[^\w-]+,',' ',(string)$_GET[$ecran_securite_i]);
-if (isset($_POST[$ecran_securite_i]))
-	$_REQUEST[$ecran_securite_i] = $GLOBALS[$ecran_securite_i] = $_POST[$ecran_securite_i] = preg_replace(',[^\w-]+,',' ',(string)$_POST[$ecran_securite_i]);
+foreach(array('lang', 'var_recherche') as $ecran_securite_i) {
+	if (isset($_GET[$ecran_securite_i]))
+		$_REQUEST[$ecran_securite_i] = $GLOBALS[$ecran_securite_i] = $_GET[$ecran_securite_i] = preg_replace(',[^\w-]+,',' ',(string)$_GET[$ecran_securite_i]);
+	if (isset($_POST[$ecran_securite_i]))
+		$_REQUEST[$ecran_securite_i] = $GLOBALS[$ecran_securite_i] = $_POST[$ecran_securite_i] = preg_replace(',[^\w-]+,',' ',(string)$_POST[$ecran_securite_i]);
+}
 
 /*     - filtre l'acces a spip_acces_doc (injection SQL en 1.8.2x)
  *
