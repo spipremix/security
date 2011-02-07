@@ -5,7 +5,7 @@
  * ------------------
  */
 
-define('_ECRAN_SECURITE', '0.9.9'); // 23 janv 2011
+define('_ECRAN_SECURITE', '1.0.0'); // 7 fev 2011
 
 /*
  * Documentation : http://www.spip.net/fr_article4200.html
@@ -53,17 +53,17 @@ $cjpeg_command='';
 /*     - controle la variable lang, var_recherche (XSS)
  *
  */
-foreach(array('lang', 'var_recherche') as $ecran_securite_i) {
-	if (isset($_GET[$ecran_securite_i]))
-		$_REQUEST[$ecran_securite_i] = $GLOBALS[$ecran_securite_i] = $_GET[$ecran_securite_i] = preg_replace(',[^\w-]+,',' ',(string)$_GET[$ecran_securite_i]);
-	if (isset($_POST[$ecran_securite_i]))
-		$_REQUEST[$ecran_securite_i] = $GLOBALS[$ecran_securite_i] = $_POST[$ecran_securite_i] = preg_replace(',[^\w-]+,',' ',(string)$_POST[$ecran_securite_i]);
+foreach(array('lang', 'var_recherche') as $var) {
+	if (isset($_GET[$var]))
+		$_REQUEST[$var] = $GLOBALS[$var] = $_GET[$var] = preg_replace(',[^\w-]+,',' ',(string)$_GET[$var]);
+	if (isset($_POST[$var]))
+		$_REQUEST[$var] = $GLOBALS[$var] = $_POST[$var] = preg_replace(',[^\w-]+,',' ',(string)$_POST[$var]);
 }
 
 /*     - filtre l'acces a spip_acces_doc (injection SQL en 1.8.2x)
  *
  */
-if (preg_match(',^(.*/)?spip_acces_doc\.,', (string)$REQUEST_URI)) {
+if (preg_match(',^(.*/)?spip_acces_doc\.,', (string)$_SERVER['REQUEST_URI'])) {
 	$file = addslashes((string)$_GET['file']);
 }
 
@@ -151,9 +151,9 @@ if (isset($_REQUEST['page'])) {
 /*
  * XSS par array
  */
-foreach (array('var_login') as $ecran_securite_i)
-if (isset($_REQUEST[ $ecran_securite_i]) AND is_array($_REQUEST[$ecran_securite_i]))
-	$ecran_securite_raison = "xss ".$ecran_securite_i;
+foreach (array('var_login') as $var)
+if (isset($_REQUEST[$var]) AND is_array($_REQUEST[$var]))
+	$ecran_securite_raison = "xss ".$var;
 
 /* Parade antivirale contre un cheval de troie */
 if(!function_exists('tmp_lkojfghx')){
