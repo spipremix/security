@@ -201,7 +201,7 @@ AND $_REQUEST['op'] !== preg_replace('/[^\-\w]/', '', $_REQUEST['op']))
 if (count($_FILES)){
 	foreach($_FILES as $k=>$v){
 		 if (preg_match(',^fichier_\d+$,',$k)
-		 AND preg_match(',[.]php3?($|[.])c,i',$v['name']))
+		 AND preg_match(',[.]php3?($|[.]),i',$v['name']))
 		 	unset($_FILES[$k]);
 	}
 }
