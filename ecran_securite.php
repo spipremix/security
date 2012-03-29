@@ -5,7 +5,7 @@
  * ------------------
  */
 
-define('_ECRAN_SECURITE', '1.0.8'); // 07 fev. 2012
+define('_ECRAN_SECURITE', '1.0.9'); // 29 mars 2012
 
 /*
  * Documentation : http://www.spip.net/fr_article4200.html
@@ -24,7 +24,7 @@ if (isset($_GET['test_ecran_securite']))
 if (!defined('_IS_BOT'))
 	define('_IS_BOT',
 		isset($_SERVER['HTTP_USER_AGENT'])
-		AND preg_match(',bot|slurp|crawler|spider|webvac|yandex|INA dlweb,i',
+		AND preg_match(',bot|slurp|crawler|spider|webvac|yandex|INA dlweb|EC2LinkFinder,i',
 			(string) $_SERVER['HTTP_USER_AGENT'])
 	);
 
