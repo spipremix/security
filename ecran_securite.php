@@ -86,6 +86,10 @@ AND !preg_match(',^[\w-]+$,', (string)$_REQUEST['exec']))
 if (isset($_REQUEST['cherche_auteur'])
 AND preg_match(',[<],', (string)$_REQUEST['cherche_auteur']))
 	$ecran_securite_raison = "cherche_auteur";
+if (isset($_REQUEST['exec'])
+AND $_REQUEST['exec'] == 'auteurs'
+AND preg_match(',[<],', (string)$_REQUEST['recherche']))
+	$ecran_securite_raison = "recherche";
 if (isset($_REQUEST['action'])
 AND $_REQUEST['action'] == 'configurer') {
 	if (@file_exists('inc_version.php')
