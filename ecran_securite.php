@@ -5,7 +5,7 @@
  * ------------------
  */
 
-define('_ECRAN_SECURITE', '1.0.10'); // 17 avril  2012
+define('_ECRAN_SECURITE', '1.1.0'); // 28 avril  2012
 
 /*
  * Documentation : http://www.spip.net/fr_article4200.html
@@ -215,6 +215,9 @@ if (isset($_REQUEST['reinstall'])
 AND $_REQUEST['reinstall'] == 'oui')
 	$ecran_securite_raison = 'reinstall=oui';
 
+/* echappement xss referer */
+if (isset($_SERVER['HTTP_REFERER']))
+	$_SERVER['HTTP_REFERER'] = strtr($_SERVER['HTTP_REFERER'], '<>"\'', '[]##');
 
 /*
  * S'il y a une raison de mourir, mourons
