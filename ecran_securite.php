@@ -5,7 +5,7 @@
  * ------------------
  */
 
-define('_ECRAN_SECURITE', '1.2.2'); // 2014-12-01
+define('_ECRAN_SECURITE', '1.2.3'); // 2016-03-07 
 
 /*
  * Documentation : http://www.spip.net/fr_article4200.html
@@ -16,6 +16,16 @@ define('_ECRAN_SECURITE', '1.2.2'); // 2014-12-01
  */
 if (isset($_GET['test_ecran_securite']))
 	$ecran_securite_raison = 'test '._ECRAN_SECURITE;
+
+/* 
+ * UptimeRobot est un robot mais pas un robot d'indexation. Laissons le donc
+ * faire son travail qui est de surveiller si le site est en ligne. Et évitons 
+ * de lui renvoyer un code 503 en cas de dépassement de la limite de charge 
+ * définie par ECRAN_SECURITE_LOAD 
+ */
+if (!defined('_IS_BOT'))
+	if (isset($_SERVER['HTTP_USER_AGENT']) AND strpos($_SERVER['HTTP_USER_AGENT'],'uptimerobot'))
+		define('_IS_BOT',false);
 
 /*
  * Détecteur de robot d'indexation
