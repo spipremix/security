@@ -5,7 +5,7 @@
  * ------------------
  */
 
-define('_ECRAN_SECURITE', '1.2.3'); // 2016-03-07 
+define('_ECRAN_SECURITE', '1.2.4'); // 2016-03-10
 
 /*
  * Documentation : http://www.spip.net/fr_article4200.html
@@ -17,70 +17,69 @@ define('_ECRAN_SECURITE', '1.2.3'); // 2016-03-07
 if (isset($_GET['test_ecran_securite']))
 	$ecran_securite_raison = 'test '._ECRAN_SECURITE;
 
-/* 
- * UptimeRobot est un robot mais pas un robot d'indexation. Laissons le donc
- * faire son travail qui est de surveiller si le site est en ligne. Et √©vitons 
- * de lui renvoyer un code 503 en cas de d√©passement de la limite de charge 
- * d√©finie par ECRAN_SECURITE_LOAD 
+/*
+ * Monitoring
+ * var_isbot=0 peut etre utilise par un bot de monitoring pour surveiller la disponibilite d'un site vu par les users
+ * var_isbot=1 peut etre utilise pour monitorer la disponibilite pour les bots (sujets a 503 de delestage si
+ * le load depasse ECRAN_SECURITE_LOAD)
  */
-if (!defined('_IS_BOT'))
-	if (isset($_SERVER['HTTP_USER_AGENT']) AND strpos($_SERVER['HTTP_USER_AGENT'],'uptimerobot'))
-		define('_IS_BOT',false);
+if (!defined('_IS_BOT') and isset($_GET['var_isbot']))
+		define('_IS_BOT',$_GET['var_isbot']?true:false);
 
 /*
- * D√©tecteur de robot d'indexation
+ * DÈtecteur de robot d'indexation
  */
 if (!defined('_IS_BOT'))
 	define('_IS_BOT',
 		isset($_SERVER['HTTP_USER_AGENT'])
-		AND preg_match(
+		and preg_match(
 	    // mots generiques
 	    ',bot|slurp|crawler|spider|webvac|yandex|'
 	    // MSIE 6.0 est un botnet 99,9% du temps, on traite donc ce USER_AGENT comme un bot
 	    . 'MSIE 6\.0|'
 	    // UA plus cibles
-	    . '80legs|accoona|AltaVista|ASPSeek|Baidu|Charlotte|EC2LinkFinder|eStyle|Google|Genieo|INA dlweb|InfegyAtlas|Java VM|LiteFinder|Lycos|Rambler|Scooter|ScrubbyBloglines|Yahoo|Yeti'
-	    . ',i',(string) $_SERVER['HTTP_USER_AGENT'])
+	    . '80legs|accoona|AltaVista|ASPSeek|Baidu|Charlotte|EC2LinkFinder|eStyle|facebook|flipboard|hootsuite|FunWebProducts|Google|Genieo|INA dlweb|InfegyAtlas|Java VM|LiteFinder|Lycos|MetaURI|Moreover|Rambler|Scooter|ScrubbyBloglines|Yahoo|Yeti'
+	    . ',i', (string) $_SERVER['HTTP_USER_AGENT'])
 	);
 
 /*
  * Interdit de passer une variable id_article (ou id_xxx) qui ne
- * soit pas num√©rique (ce qui bloque l'exploitation de divers trous
- * de s√©curit√©, dont celui de toutes les versions < 1.8.2f)
- * (sauf pour id_table, qui n'est pas num√©rique jusqu'√† [5743])
+ * soit pas numÈrique (ce qui bloque l'exploitation de divers trous
+ * de sÈcuritÈ, dont celui de toutes les versions < 1.8.2f)
+ * (sauf pour id_table, qui n'est pas numÈrique jusqu'‡ [5743])
  * (id_base est une variable de la config des widgets de WordPress)
  */
 foreach ($_GET as $var => $val)
-	if ($_GET[$var] AND strncmp($var,"id_",3)==0
-	AND !in_array($var, array('id_table','id_base')))
-		$_GET[$var] = is_array($_GET[$var])?@array_map('intval',$_GET[$var]):intval($_GET[$var]);
+	if ($_GET[$var] and strncmp($var, "id_", 3) == 0
+	and !in_array($var, array('id_table', 'id_base')))
+		$_GET[$var] = is_array($_GET[$var])?@array_map('intval', $_GET[$var]):intval($_GET[$var]);
 foreach ($_POST as $var => $val)
-	if ($_POST[$var] AND strncmp($var,"id_",3)==0
-	AND !in_array($var, array('id_table','id_base')))
-		$_POST[$var] = is_array($_POST[$var])?@array_map('intval',$_POST[$var]):intval($_POST[$var]);
+	if ($_POST[$var] and strncmp($var, "id_", 3) == 0
+	and !in_array($var, array('id_table', 'id_base')))
+		$_POST[$var] = is_array($_POST[$var])?@array_map('intval', $_POST[$var]):intval($_POST[$var]);
 foreach ($GLOBALS as $var => $val)
-	if ($GLOBALS[$var] AND strncmp($var,"id_",3)==0
-	AND !in_array($var, array('id_table','id_base')))
-		$GLOBALS[$var] = is_array($GLOBALS[$var])?@array_map('intval',$GLOBALS[$var]):intval($GLOBALS[$var]);
+	if ($GLOBALS[$var] and strncmp($var, "id_", 3) == 0
+	and !in_array($var, array('id_table', 'id_base')))
+		$GLOBALS[$var] = is_array($GLOBALS[$var])?@array_map('intval', $GLOBALS[$var]):intval($GLOBALS[$var]);
 
 /*
- * Interdit la variable $cjpeg_command, qui √©tait utilis√©e sans
- * pr√©caution dans certaines versions de dev (1.8b2 -> 1.8b5)
+ * Interdit la variable $cjpeg_command, qui Ètait utilisÈe sans
+ * prÈcaution dans certaines versions de dev (1.8b2 -> 1.8b5)
  */
-$cjpeg_command='';
+$cjpeg_command = '';
 
 /*
- * Contr√¥le de quelques variables (XSS)
+ * ContrÙle de quelques variables (XSS)
  */
 foreach(array('lang', 'var_recherche', 'aide', 'var_lang_r', 'lang_r', 'var_ajax_ancre') as $var) {
 	if (isset($_GET[$var]))
-		$_REQUEST[$var] = $GLOBALS[$var] = $_GET[$var] = preg_replace(',[^\w\,/#&;-]+,',' ',(string)$_GET[$var]);
+		$_REQUEST[$var] = $GLOBALS[$var] = $_GET[$var] = preg_replace(',[^\w\,/#&;-]+,', ' ', (string)$_GET[$var]);
 	if (isset($_POST[$var]))
-		$_REQUEST[$var] = $GLOBALS[$var] = $_POST[$var] = preg_replace(',[^\w\,/#&;-]+,',' ',(string)$_POST[$var]);
+		$_REQUEST[$var] = $GLOBALS[$var] = $_POST[$var] = preg_replace(',[^\w\,/#&;-]+,', ' ', (string)$_POST[$var]);
 }
 
 /*
- * Filtre l'acc√®s √† spip_acces_doc (injection SQL en 1.8.2x)
+ * Filtre l'accËs ‡ spip_acces_doc (injection SQL en 1.8.2x)
  */
 if (preg_match(',^(.*/)?spip_acces_doc\.,', (string)$_SERVER['REQUEST_URI'])) {
 	$file = addslashes((string)$_GET['file']);
@@ -89,38 +88,38 @@ if (preg_match(',^(.*/)?spip_acces_doc\.,', (string)$_SERVER['REQUEST_URI'])) {
 /*
  * Pas d'inscription abusive
  */
-if (isset($_REQUEST['mode']) AND isset($_REQUEST['page'])
-AND !in_array($_REQUEST['mode'],array("6forum","1comite"))
-AND $_REQUEST['page'] == "identifiants")
+if (isset($_REQUEST['mode']) and isset($_REQUEST['page'])
+and !in_array($_REQUEST['mode'], array("6forum", "1comite"))
+and $_REQUEST['page'] == "identifiants")
 	$ecran_securite_raison = "identifiants";
 
 /*
- * Agenda joue √† l'injection php
+ * Agenda joue ‡ l'injection php
  */
 if (isset($_REQUEST['partie_cal'])
-AND $_REQUEST['partie_cal'] !== htmlentities((string)$_REQUEST['partie_cal']))
+and $_REQUEST['partie_cal'] !== htmlentities((string)$_REQUEST['partie_cal']))
 	$ecran_securite_raison = "partie_cal";
 if (isset($_REQUEST['echelle'])
-AND $_REQUEST['echelle'] !== htmlentities((string)$_REQUEST['echelle']))
+and $_REQUEST['echelle'] !== htmlentities((string)$_REQUEST['echelle']))
 	$ecran_securite_raison = "echelle";
 
 /*
- * Espace priv√©
+ * Espace privÈ
  */
 if (isset($_REQUEST['exec'])
-AND !preg_match(',^[\w-]+$,', (string)$_REQUEST['exec']))
+and !preg_match(',^[\w-]+$,', (string)$_REQUEST['exec']))
 	$ecran_securite_raison = "exec";
 if (isset($_REQUEST['cherche_auteur'])
-AND preg_match(',[<],', (string)$_REQUEST['cherche_auteur']))
+and preg_match(',[<],', (string)$_REQUEST['cherche_auteur']))
 	$ecran_securite_raison = "cherche_auteur";
 if (isset($_REQUEST['exec'])
-AND $_REQUEST['exec'] == 'auteurs'
-AND preg_match(',[<],', (string)$_REQUEST['recherche']))
+and $_REQUEST['exec'] == 'auteurs'
+and preg_match(',[<],', (string)$_REQUEST['recherche']))
 	$ecran_securite_raison = "recherche";
 if (isset($_REQUEST['action'])
-AND $_REQUEST['action'] == 'configurer') {
+and $_REQUEST['action'] == 'configurer') {
 	if (@file_exists('inc_version.php')
-	OR @file_exists('ecrire/inc_version.php')) {
+	or @file_exists('ecrire/inc_version.php')) {
 		function action_configurer() {
 			include_spip('inc/autoriser');
 			if(!autoriser('configurer', _request('configuration'))) {
@@ -135,7 +134,7 @@ AND $_REQUEST['action'] == 'configurer') {
 }
 
 /*
- * Bloque les requ√™tes contenant %00 (manipulation d'include)
+ * Bloque les requÍtes contenant %00 (manipulation d'include)
  */
 if (strpos(
 	@get_magic_quotes_gpc() ?
@@ -145,26 +144,26 @@ if (strpos(
 	$ecran_securite_raison = "%00";
 
 /*
- * Bloque les requ√™tes fond=formulaire_
+ * Bloque les requÍtes fond=formulaire_
  */
 if (isset($_REQUEST['fond'])
-AND preg_match(',^formulaire_,i', $_REQUEST['fond']))
+and preg_match(',^formulaire_,i', $_REQUEST['fond']))
 	$ecran_securite_raison = "fond=formulaire_";
 
 /*
- * Bloque les requ√™tes du type ?GLOBALS[type_urls]=toto (bug vieux php)
+ * Bloque les requÍtes du type ?GLOBALS[type_urls]=toto (bug vieux php)
  */
 if (isset($_REQUEST['GLOBALS']))
 	$ecran_securite_raison = "GLOBALS[GLOBALS]";
 
 /*
- * Bloque les requ√™tes des bots sur:
+ * Bloque les requÍtes des bots sur:
  * les agenda
- * les paginations entrem√©l√©es
+ * les paginations entremÈlÈes
  */
-if (_IS_BOT AND (
-	(isset($_REQUEST['echelle']) AND isset($_REQUEST['partie_cal']) AND isset($_REQUEST['type']))
-	OR (strpos((string)$_SERVER['REQUEST_URI'],'debut_') AND preg_match(',[?&]debut_.*&debut_,', (string)$_SERVER['REQUEST_URI']))
+if (_IS_BOT and (
+	(isset($_REQUEST['echelle']) and isset($_REQUEST['partie_cal']) and isset($_REQUEST['type']))
+	or (strpos((string)$_SERVER['REQUEST_URI'], 'debut_') and preg_match(',[?&]debut_.*&debut_,', (string)$_SERVER['REQUEST_URI']))
 )
 )
 	$ecran_securite_raison = "robot agenda/double pagination";
@@ -174,12 +173,12 @@ if (_IS_BOT AND (
  * Bloque un XSS sur une page inexistante
  */
 if (isset($_REQUEST['page'])) {
-	if ($_REQUEST['page']=='test_cfg')
+	if ($_REQUEST['page'] == 'test_cfg')
 		$ecran_securite_raison = "test_cfg";
 	if ($_REQUEST['page'] !== htmlspecialchars((string)$_REQUEST['page']))
 		$ecran_securite_raison = "xsspage";
 	if ($_REQUEST['page'] == '404'
-	AND isset($_REQUEST['erreur']))
+	and isset($_REQUEST['erreur']))
 		$ecran_securite_raison = "xss404";
 }
 
@@ -187,7 +186,7 @@ if (isset($_REQUEST['page'])) {
  * XSS par array
  */
 foreach (array('var_login') as $var)
-if (isset($_REQUEST[$var]) AND is_array($_REQUEST[$var]))
+if (isset($_REQUEST[$var]) and is_array($_REQUEST[$var]))
 	$ecran_securite_raison = "xss ".$var;
 
 /*
@@ -195,48 +194,48 @@ if (isset($_REQUEST[$var]) AND is_array($_REQUEST[$var]))
  */
 if (!function_exists('tmp_lkojfghx')) {
 	function tmp_lkojfghx() {}
-	function tmp_lkojfghx2($a=0, $b=0, $c=0, $d=0) {
-		// si jamais on est arriv√© ici sur une erreur php
-		// et qu'un autre gestionnaire d'erreur est d√©fini, l'appeller
-		if ($b&&$GLOBALS['tmp_xhgfjokl'])
-			call_user_func($GLOBALS['tmp_xhgfjokl'],$a,$b,$c,$d);
+	function tmp_lkojfghx2($a = 0, $b = 0, $c = 0, $d = 0) {
+		// si jamais on est arrivÈ ici sur une erreur php
+		// et qu'un autre gestionnaire d'erreur est dÈfini, l'appeller
+		if ($b && $GLOBALS['tmp_xhgfjokl'])
+			call_user_func($GLOBALS['tmp_xhgfjokl'], $a, $b, $c, $d);
 	}
 }
 if (isset($_POST['tmp_lkojfghx3']))
 	$ecran_securite_raison = "gumblar";
 
 /*
- * Outils XML mal s√©curis√©s < 2.0.9
+ * Outils XML mal sÈcurisÈs < 2.0.9
  */
 if (isset($_REQUEST['transformer_xml']))
 	$ecran_securite_raison = "transformer_xml";
 
 /*
- * Sauvegarde mal securis√©e < 2.0.9
+ * Sauvegarde mal securisÈe < 2.0.9
  */
 if (isset($_REQUEST['nom_sauvegarde'])
-AND strstr((string)$_REQUEST['nom_sauvegarde'], '/'))
+and strstr((string)$_REQUEST['nom_sauvegarde'], '/'))
 	$ecran_securite_raison = 'nom_sauvegarde manipulee';
 if (isset($_REQUEST['znom_sauvegarde'])
-AND strstr((string)$_REQUEST['znom_sauvegarde'], '/'))
+and strstr((string)$_REQUEST['znom_sauvegarde'], '/'))
 	$ecran_securite_raison = 'znom_sauvegarde manipulee';
 
 
 /*
  * op permet des inclusions arbitraires ;
- * on v√©rifie 'page' pour ne pas bloquer ... drupal
+ * on vÈrifie 'page' pour ne pas bloquer ... drupal
  */
-if (isset($_REQUEST['op']) AND isset($_REQUEST['page'])
-AND $_REQUEST['op'] !== preg_replace('/[^\-\w]/', '', $_REQUEST['op']))
+if (isset($_REQUEST['op']) and isset($_REQUEST['page'])
+and $_REQUEST['op'] !== preg_replace('/[^\-\w]/', '', $_REQUEST['op']))
 	$ecran_securite_raison = 'op';
 
 /*
- * Forms & Table ne se m√©fiait pas assez des uploads de fichiers
+ * Forms & Table ne se mÈfiait pas assez des uploads de fichiers
  */
 if (count($_FILES)){
-	foreach($_FILES as $k=>$v){
-		 if (preg_match(',^fichier_\d+$,',$k)
-		 AND preg_match(',\.php,i',$v['name']))
+	foreach($_FILES as $k => $v){
+		 if (preg_match(',^fichier_\d+$,', $k)
+		 and preg_match(',\.php,i', $v['name']))
 		 	unset($_FILES[$k]);
 	}
 }
@@ -244,7 +243,7 @@ if (count($_FILES)){
  * et Contact trop laxiste avec une variable externe
  * on bloque pas le post pour eviter de perdre des donnees mais on unset la variable et c'est tout
  */
-if (isset($_REQUEST['pj_enregistrees_nom']) AND $_REQUEST['pj_enregistrees_nom']){
+if (isset($_REQUEST['pj_enregistrees_nom']) and $_REQUEST['pj_enregistrees_nom']){
 	unset($_REQUEST['pj_enregistrees_nom']);
 	unset($_GET['pj_enregistrees_nom']);
 	unset($_POST['pj_enregistrees_nom']);
@@ -254,21 +253,21 @@ if (isset($_REQUEST['pj_enregistrees_nom']) AND $_REQUEST['pj_enregistrees_nom']
  * reinstall=oui un peu trop permissif
  */
 if (isset($_REQUEST['reinstall'])
-AND $_REQUEST['reinstall'] == 'oui')
+and $_REQUEST['reinstall'] == 'oui')
 	$ecran_securite_raison = 'reinstall=oui';
 
 /*
- * √âchappement xss referer
+ * …chappement xss referer
  */
 if (isset($_SERVER['HTTP_REFERER']))
 	$_SERVER['HTTP_REFERER'] = strtr($_SERVER['HTTP_REFERER'], '<>"\'', '[]##');
 
 /*
- * R√©injection des cl√©s en html dans l'admin r19561
+ * RÈinjection des clÈs en html dans l'admin r19561
  */
-if (strpos($_SERVER['REQUEST_URI'],"ecrire/")!==false){
-	$zzzz=implode("",array_keys($_REQUEST));
-	if (strlen($zzzz)!=strcspn($zzzz,'<>"\''))
+if (strpos($_SERVER['REQUEST_URI'], "ecrire/") !== false){
+	$zzzz = implode("", array_keys($_REQUEST));
+	if (strlen($zzzz) != strcspn($zzzz, '<>"\''))
 		$ecran_securite_raison = 'Cle incorrecte en $_REQUEST';
 }
 
@@ -276,13 +275,13 @@ if (strpos($_SERVER['REQUEST_URI'],"ecrire/")!==false){
  * Injection par connect
  */
 if (isset($_REQUEST['connect'])
-	AND
+	and
 	// cas qui permettent de sortir d'un commentaire PHP
-	(strpos($_REQUEST['connect'], "?")!==false
-	 OR strpos($_REQUEST['connect'], "<")!==false
-	 OR strpos($_REQUEST['connect'], ">")!==false
-	 OR strpos($_REQUEST['connect'], "\n")!==false
-	 OR strpos($_REQUEST['connect'], "\r")!==false)
+	(strpos($_REQUEST['connect'], "?") !== false
+	 or strpos($_REQUEST['connect'], "<") !== false
+	 or strpos($_REQUEST['connect'], ">") !== false
+	 or strpos($_REQUEST['connect'], "\n") !== false
+	 or strpos($_REQUEST['connect'], "\r") !== false)
 	) {
 	$ecran_securite_raison = "malformed connect argument";
 }
@@ -300,36 +299,47 @@ if (isset($ecran_securite_raison)) {
 }
 
 /*
- * Fin s√©curit√©
+ * Un filtre filtrer_entites securise
+ */
+if (!function_exists('filtre_filtrer_entites_dist')) {
+	function filtre_filtrer_entites_dist($t) {
+		include_spip('inc/texte');
+		return interdire_scripts(filtrer_entites($t));
+	}
+}
+
+
+/*
+ * Fin sÈcuritÈ
  */
 
 
 
 /*
- * Bloque les bots quand le load d√©borde
+ * Bloque les bots quand le load dÈborde
  */
 if (!defined('_ECRAN_SECURITE_LOAD'))
 	define('_ECRAN_SECURITE_LOAD', 4);
 
 if (
 	defined('_ECRAN_SECURITE_LOAD')
-	AND _ECRAN_SECURITE_LOAD>0
-	AND _IS_BOT
-	AND $_SERVER['REQUEST_METHOD'] === 'GET'
-	AND (
+	and _ECRAN_SECURITE_LOAD > 0
+	and _IS_BOT
+	and $_SERVER['REQUEST_METHOD'] === 'GET'
+	and (
 		(function_exists('sys_getloadavg')
-		  AND $load = sys_getloadavg()
-		  AND is_array($load)
-		  AND $load = array_shift($load)
+		  and $load = sys_getloadavg()
+		  and is_array($load)
+		  and $load = array_shift($load)
 		)
-		OR
+		or
 		(@is_readable('/proc/loadavg')
-		  AND $load = file_get_contents('/proc/loadavg')
-		  AND $load = floatval($load)
+		  and $load = file_get_contents('/proc/loadavg')
+		  and $load = floatval($load)
 		)
 	)
-	AND $load > _ECRAN_SECURITE_LOAD // eviter l'evaluation suivante si de toute facon le load est inferieur a la limite
-	AND rand(0, $load*$load) > _ECRAN_SECURITE_LOAD*_ECRAN_SECURITE_LOAD
+	and $load > _ECRAN_SECURITE_LOAD // eviter l'evaluation suivante si de toute facon le load est inferieur a la limite
+	and rand(0, $load * $load) > _ECRAN_SECURITE_LOAD * _ECRAN_SECURITE_LOAD
 ) {
 	header("HTTP/1.0 503 Service Unavailable");
 	header("Retry-After: 300");
@@ -340,5 +350,3 @@ if (
 	die("<html><title>Status 503: Site temporarily unavailable</title><body><h1>Status 503</h1><p>Site temporarily unavailable (load average $load)</p></body></html>");
 }
 
-
-?>
