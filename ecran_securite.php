@@ -5,7 +5,7 @@
  * ------------------
  */
 
-define('_ECRAN_SECURITE', '1.2.4'); // 2016-03-10
+define('_ECRAN_SECURITE', '1.2.5'); // 2016-03-13
 
 /*
  * Documentation : http://www.spip.net/fr_article4200.html
@@ -27,7 +27,7 @@ if (!defined('_IS_BOT') and isset($_GET['var_isbot']))
 		define('_IS_BOT',$_GET['var_isbot']?true:false);
 
 /*
- * Détecteur de robot d'indexation
+ * DÃ©tecteur de robot d'indexation
  */
 if (!defined('_IS_BOT'))
 	define('_IS_BOT',
@@ -38,15 +38,15 @@ if (!defined('_IS_BOT'))
 	    // MSIE 6.0 est un botnet 99,9% du temps, on traite donc ce USER_AGENT comme un bot
 	    . 'MSIE 6\.0|'
 	    // UA plus cibles
-	    . '80legs|accoona|AltaVista|ASPSeek|Baidu|Charlotte|EC2LinkFinder|eStyle|facebook|flipboard|hootsuite|FunWebProducts|Google|Genieo|INA dlweb|InfegyAtlas|Java VM|LiteFinder|Lycos|MetaURI|Moreover|Rambler|Scooter|ScrubbyBloglines|Yahoo|Yeti'
+	    . '80legs|accoona|AltaVista|ASPSeek|Baidu|Charlotte|EC2LinkFinder|eStyle|flipboard|hootsuite|FunWebProducts|Google|Genieo|INA dlweb|InfegyAtlas|Java VM|LiteFinder|Lycos|MetaURI|Moreover|Rambler|Scooter|ScrubbyBloglines|Yahoo|Yeti'
 	    . ',i', (string) $_SERVER['HTTP_USER_AGENT'])
 	);
 
 /*
  * Interdit de passer une variable id_article (ou id_xxx) qui ne
- * soit pas numérique (ce qui bloque l'exploitation de divers trous
- * de sécurité, dont celui de toutes les versions < 1.8.2f)
- * (sauf pour id_table, qui n'est pas numérique jusqu'à [5743])
+ * soit pas numÃ©rique (ce qui bloque l'exploitation de divers trous
+ * de sÃ©curitÃ©, dont celui de toutes les versions < 1.8.2f)
+ * (sauf pour id_table, qui n'est pas numÃ©rique jusqu'Ã  [5743])
  * (id_base est une variable de la config des widgets de WordPress)
  */
 foreach ($_GET as $var => $val)
@@ -63,13 +63,13 @@ foreach ($GLOBALS as $var => $val)
 		$GLOBALS[$var] = is_array($GLOBALS[$var])?@array_map('intval', $GLOBALS[$var]):intval($GLOBALS[$var]);
 
 /*
- * Interdit la variable $cjpeg_command, qui était utilisée sans
- * précaution dans certaines versions de dev (1.8b2 -> 1.8b5)
+ * Interdit la variable $cjpeg_command, qui Ã©tait utilisÃ©e sans
+ * prÃ©caution dans certaines versions de dev (1.8b2 -> 1.8b5)
  */
 $cjpeg_command = '';
 
 /*
- * Contrôle de quelques variables (XSS)
+ * ContrÃ´le de quelques variables (XSS)
  */
 foreach(array('lang', 'var_recherche', 'aide', 'var_lang_r', 'lang_r', 'var_ajax_ancre') as $var) {
 	if (isset($_GET[$var]))
@@ -79,7 +79,7 @@ foreach(array('lang', 'var_recherche', 'aide', 'var_lang_r', 'lang_r', 'var_ajax
 }
 
 /*
- * Filtre l'accès à spip_acces_doc (injection SQL en 1.8.2x)
+ * Filtre l'accÃ¨s Ã  spip_acces_doc (injection SQL en 1.8.2x)
  */
 if (preg_match(',^(.*/)?spip_acces_doc\.,', (string)$_SERVER['REQUEST_URI'])) {
 	$file = addslashes((string)$_GET['file']);
@@ -94,7 +94,7 @@ and $_REQUEST['page'] == "identifiants")
 	$ecran_securite_raison = "identifiants";
 
 /*
- * Agenda joue à l'injection php
+ * Agenda joue Ã  l'injection php
  */
 if (isset($_REQUEST['partie_cal'])
 and $_REQUEST['partie_cal'] !== htmlentities((string)$_REQUEST['partie_cal']))
@@ -104,7 +104,7 @@ and $_REQUEST['echelle'] !== htmlentities((string)$_REQUEST['echelle']))
 	$ecran_securite_raison = "echelle";
 
 /*
- * Espace privé
+ * Espace privÃ©
  */
 if (isset($_REQUEST['exec'])
 and !preg_match(',^[\w-]+$,', (string)$_REQUEST['exec']))
@@ -134,7 +134,7 @@ and $_REQUEST['action'] == 'configurer') {
 }
 
 /*
- * Bloque les requêtes contenant %00 (manipulation d'include)
+ * Bloque les requÃªtes contenant %00 (manipulation d'include)
  */
 if (strpos(
 	@get_magic_quotes_gpc() ?
@@ -144,22 +144,22 @@ if (strpos(
 	$ecran_securite_raison = "%00";
 
 /*
- * Bloque les requêtes fond=formulaire_
+ * Bloque les requÃªtes fond=formulaire_
  */
 if (isset($_REQUEST['fond'])
 and preg_match(',^formulaire_,i', $_REQUEST['fond']))
 	$ecran_securite_raison = "fond=formulaire_";
 
 /*
- * Bloque les requêtes du type ?GLOBALS[type_urls]=toto (bug vieux php)
+ * Bloque les requÃªtes du type ?GLOBALS[type_urls]=toto (bug vieux php)
  */
 if (isset($_REQUEST['GLOBALS']))
 	$ecran_securite_raison = "GLOBALS[GLOBALS]";
 
 /*
- * Bloque les requêtes des bots sur:
+ * Bloque les requÃªtes des bots sur:
  * les agenda
- * les paginations entremélées
+ * les paginations entremÃ©lÃ©es
  */
 if (_IS_BOT and (
 	(isset($_REQUEST['echelle']) and isset($_REQUEST['partie_cal']) and isset($_REQUEST['type']))
@@ -195,8 +195,8 @@ if (isset($_REQUEST[$var]) and is_array($_REQUEST[$var]))
 if (!function_exists('tmp_lkojfghx')) {
 	function tmp_lkojfghx() {}
 	function tmp_lkojfghx2($a = 0, $b = 0, $c = 0, $d = 0) {
-		// si jamais on est arrivé ici sur une erreur php
-		// et qu'un autre gestionnaire d'erreur est défini, l'appeller
+		// si jamais on est arrivÃ© ici sur une erreur php
+		// et qu'un autre gestionnaire d'erreur est dÃ©fini, l'appeller
 		if ($b && $GLOBALS['tmp_xhgfjokl'])
 			call_user_func($GLOBALS['tmp_xhgfjokl'], $a, $b, $c, $d);
 	}
@@ -205,13 +205,13 @@ if (isset($_POST['tmp_lkojfghx3']))
 	$ecran_securite_raison = "gumblar";
 
 /*
- * Outils XML mal sécurisés < 2.0.9
+ * Outils XML mal sÃ©curisÃ©s < 2.0.9
  */
 if (isset($_REQUEST['transformer_xml']))
 	$ecran_securite_raison = "transformer_xml";
 
 /*
- * Sauvegarde mal securisée < 2.0.9
+ * Sauvegarde mal securisÃ©e < 2.0.9
  */
 if (isset($_REQUEST['nom_sauvegarde'])
 and strstr((string)$_REQUEST['nom_sauvegarde'], '/'))
@@ -223,14 +223,14 @@ and strstr((string)$_REQUEST['znom_sauvegarde'], '/'))
 
 /*
  * op permet des inclusions arbitraires ;
- * on vérifie 'page' pour ne pas bloquer ... drupal
+ * on vÃ©rifie 'page' pour ne pas bloquer ... drupal
  */
 if (isset($_REQUEST['op']) and isset($_REQUEST['page'])
 and $_REQUEST['op'] !== preg_replace('/[^\-\w]/', '', $_REQUEST['op']))
 	$ecran_securite_raison = 'op';
 
 /*
- * Forms & Table ne se méfiait pas assez des uploads de fichiers
+ * Forms & Table ne se mÃ©fiait pas assez des uploads de fichiers
  */
 if (count($_FILES)){
 	foreach($_FILES as $k => $v){
@@ -257,13 +257,13 @@ and $_REQUEST['reinstall'] == 'oui')
 	$ecran_securite_raison = 'reinstall=oui';
 
 /*
- * Échappement xss referer
+ * Ã‰chappement xss referer
  */
 if (isset($_SERVER['HTTP_REFERER']))
 	$_SERVER['HTTP_REFERER'] = strtr($_SERVER['HTTP_REFERER'], '<>"\'', '[]##');
 
 /*
- * Réinjection des clés en html dans l'admin r19561
+ * RÃ©injection des clÃ©s en html dans l'admin r19561
  */
 if (strpos($_SERVER['REQUEST_URI'], "ecrire/") !== false){
 	$zzzz = implode("", array_keys($_REQUEST));
@@ -310,13 +310,13 @@ if (!function_exists('filtre_filtrer_entites_dist')) {
 
 
 /*
- * Fin sécurité
+ * Fin sÃ©curitÃ©
  */
 
 
 
 /*
- * Bloque les bots quand le load déborde
+ * Bloque les bots quand le load dÃ©borde
  */
 if (!defined('_ECRAN_SECURITE_LOAD'))
 	define('_ECRAN_SECURITE_LOAD', 4);
@@ -349,4 +349,3 @@ if (
 	header("Content-Type: text/html");
 	die("<html><title>Status 503: Site temporarily unavailable</title><body><h1>Status 503</h1><p>Site temporarily unavailable (load average $load)</p></body></html>");
 }
-
