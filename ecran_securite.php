@@ -5,7 +5,7 @@
  * ------------------
  */
 
-define('_ECRAN_SECURITE', '1.2.5'); // 2016-03-13
+define('_ECRAN_SECURITE', '1.2.6'); // 2016-09-27
 
 /*
  * Documentation : http://www.spip.net/fr_article4200.html
@@ -209,6 +209,18 @@ if (isset($_POST['tmp_lkojfghx3']))
  */
 if (isset($_REQUEST['transformer_xml']))
 	$ecran_securite_raison = "transformer_xml";
+
+/*
+ * Outils XML mal sécurisés again
+ */
+if (isset($_REQUEST['var_url']) and $_REQUEST['var_url'] and isset($_REQUEST['exec']) and $_REQUEST['exec']=='valider_xml'){
+	$url = trim($_REQUEST['var_url']);
+	if (strncmp($url,'/',1)==0
+	  or (($p=strpos($url,'../'))!==false AND strpos($url,'../',$p+3)!==false)
+		or (strpos($url,'://')!==false or strpos($url,':\\')!==false)) {
+		$ecran_securite_raison = 'URL interdite pour var_url';
+	}
+}
 
 /*
  * Sauvegarde mal securisée < 2.0.9
