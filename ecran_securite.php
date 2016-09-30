@@ -5,7 +5,7 @@
  * ------------------
  */
 
-define('_ECRAN_SECURITE', '1.2.6'); // 2016-09-27
+define('_ECRAN_SECURITE', '1.2.7'); // 2016-09-30
 
 /*
  * Documentation : http://www.spip.net/fr_article4200.html
@@ -216,7 +216,7 @@ if (isset($_REQUEST['transformer_xml']))
 if (isset($_REQUEST['var_url']) and $_REQUEST['var_url'] and isset($_REQUEST['exec']) and $_REQUEST['exec']=='valider_xml'){
 	$url = trim($_REQUEST['var_url']);
 	if (strncmp($url,'/',1)==0
-	  or (($p=strpos($url,'../'))!==false AND strpos($url,'../',$p+3)!==false)
+	  or (($p=strpos($url,'..'))!==false AND strpos($url,'..',$p+3)!==false)
 		or (strpos($url,'://')!==false or strpos($url,':\\')!==false)) {
 		$ecran_securite_raison = 'URL interdite pour var_url';
 	}
