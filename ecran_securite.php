@@ -5,7 +5,7 @@
  * ------------------
  */
 
-define('_ECRAN_SECURITE', '1.2.7'); // 2016-09-30
+define('_ECRAN_SECURITE', '1.2.8'); // 2016-11-30
 
 /*
  * Documentation : http://www.spip.net/fr_article4200.html
@@ -116,6 +116,14 @@ if (isset($_REQUEST['exec'])
 and $_REQUEST['exec'] == 'auteurs'
 and preg_match(',[<],', (string)$_REQUEST['recherche']))
 	$ecran_securite_raison = "recherche";
+if (isset($_REQUEST['exec'])
+and $_REQUEST['exec'] == 'info_plugin'
+and preg_match(',[<],', (string)$_REQUEST['plugin']))
+	$ecran_securite_raison = "plugin";
+if (isset($_REQUEST['exec'])
+and $_REQUEST['exec'] == 'puce_statut'
+and !intval($_REQUEST['id']))
+	$ecran_securite_raison = "puce_statut";
 if (isset($_REQUEST['action'])
 and $_REQUEST['action'] == 'configurer') {
 	if (@file_exists('inc_version.php')
