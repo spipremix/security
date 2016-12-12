@@ -5,7 +5,7 @@
  * ------------------
  */
 
-define('_ECRAN_SECURITE', '1.2.8'); // 2016-11-30
+define('_ECRAN_SECURITE', '1.2.9'); // 2016-12-11
 
 /*
  * Documentation : http://www.spip.net/fr_article4200.html
@@ -122,6 +122,7 @@ and preg_match(',[<],', (string)$_REQUEST['plugin']))
 	$ecran_securite_raison = "plugin";
 if (isset($_REQUEST['exec'])
 and $_REQUEST['exec'] == 'puce_statut'
+and isset($_REQUEST['id'])
 and !intval($_REQUEST['id']))
 	$ecran_securite_raison = "puce_statut";
 if (isset($_REQUEST['action'])
