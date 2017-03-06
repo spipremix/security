@@ -5,7 +5,7 @@
  * ------------------
  */
 
-define('_ECRAN_SECURITE', '1.2.9'); // 2016-12-11
+define('_ECRAN_SECURITE', '1.3.0'); // 2017-03-06
 
 /*
  * Documentation : http://www.spip.net/fr_article4200.html
@@ -38,7 +38,7 @@ if (!defined('_IS_BOT'))
 	    // MSIE 6.0 est un botnet 99,9% du temps, on traite donc ce USER_AGENT comme un bot
 	    . 'MSIE 6\.0|'
 	    // UA plus cibles
-	    . '80legs|accoona|AltaVista|ASPSeek|Baidu|Charlotte|EC2LinkFinder|eStyle|flipboard|hootsuite|FunWebProducts|Google|Genieo|INA dlweb|InfegyAtlas|Java VM|LiteFinder|Lycos|MegaIndex|MetaURI|Moreover|Rambler|Scooter|ScrubbyBloglines|Yahoo|Yeti'
+	    . '80legs|accoona|AltaVista|ASPSeek|Baidu|Charlotte|EC2LinkFinder|eStyle|flipboard|hootsuite|FunWebProducts|Google|Genieo|INA dlweb|InfegyAtlas|Java VM|LiteFinder|Lycos|MegaIndex|MetaURI|Moreover|Rambler|Scrapy|Scooter|ScrubbyBloglines|Yahoo|Yeti'
 	    . ',i', (string) $_SERVER['HTTP_USER_AGENT'])
 	);
 
@@ -71,7 +71,7 @@ $cjpeg_command = '';
 /*
  * Contrôle de quelques variables (XSS)
  */
-foreach(array('lang', 'var_recherche', 'aide', 'var_lang_r', 'lang_r', 'var_ajax_ancre') as $var) {
+foreach(array('lang', 'var_recherche', 'aide', 'var_lang_r', 'lang_r', 'var_ajax_ancre', 'nom_fichier') as $var) {
 	if (isset($_GET[$var]))
 		$_REQUEST[$var] = $GLOBALS[$var] = $_GET[$var] = preg_replace(',[^\w\,/#&;-]+,', ' ', (string)$_GET[$var]);
 	if (isset($_POST[$var]))
