@@ -5,7 +5,7 @@
  * ------------------
  */
 
-define('_ECRAN_SECURITE', '1.3.1'); // 2017-05-31
+define('_ECRAN_SECURITE', '1.3.2'); // 2017-06-12
 
 /*
  * Documentation : http://www.spip.net/fr_article4200.html
@@ -293,6 +293,14 @@ and $_REQUEST['reinstall'] == 'oui')
  */
 if (isset($_SERVER['HTTP_REFERER']))
 	$_SERVER['HTTP_REFERER'] = strtr($_SERVER['HTTP_REFERER'], '<>"\'', '[]##');
+
+
+/*
+ * Echappement HTTP_X_FORWARDED_HOST
+ */
+if (isset($_SERVER['HTTP_X_FORWARDED_HOST']))
+	$_SERVER['HTTP_X_FORWARDED_HOST'] = strtr($_SERVER['HTTP_X_FORWARDED_HOST'], "<>?\"\{\}\$'` \r\n", '____________');
+
 
 /*
  * Réinjection des clés en html dans l'admin r19561
