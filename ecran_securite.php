@@ -5,7 +5,7 @@
  * ------------------
  */
 
-define('_ECRAN_SECURITE', '1.3.5'); // 2018-01-11
+define('_ECRAN_SECURITE', '1.3.6'); // 2018-03-16
 
 /*
  * Documentation : http://www.spip.net/fr_article4200.html
@@ -237,6 +237,7 @@ if (isset($_REQUEST['var_url']) and $_REQUEST['var_url'] and isset($_REQUEST['ex
 	$url = trim($_REQUEST['var_url']);
 	if (strncmp($url,'/',1)==0
 	  or (($p=strpos($url,'..'))!==false AND strpos($url,'..',$p+3)!==false)
+	  or (($p=strpos($url,'..'))!==false AND strpos($url,'IMG',$p+3)!==false)
 		or (strpos($url,'://')!==false or strpos($url,':\\')!==false)) {
 		$ecran_securite_raison = 'URL interdite pour var_url';
 	}
