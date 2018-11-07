@@ -131,6 +131,7 @@ if (!defined('_IS_BOT')){
 			'proximic',
 			'qirina',
 			'qualidator',
+			'qwantify',
 			'rambler',
 			'readability',
 			'sbsearch',
