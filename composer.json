@@ -1,0 +1,16 @@
+{
+    "name": "spip/security",
+    "description": "Protection du site par blocage de certaines attaques",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Collectif SPIP",
+            "email": "spip-dev@rezo.net"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "files": ["ecran_securite.php"]
+    }
+}
