@@ -5,7 +5,7 @@
  * ------------------
  */
 
-define('_ECRAN_SECURITE', '1.3.11'); // 2019-04-08
+define('_ECRAN_SECURITE', '1.3.13'); // 2019-12-04
 
 /*
  * Documentation : http://www.spip.net/fr_article4200.html
@@ -275,8 +275,10 @@ foreach(array('lang', 'var_recherche', 'aide', 'var_lang_r', 'lang_r', 'var_ajax
 /*
  * Filtre l'accès à spip_acces_doc (injection SQL en 1.8.2x)
  */
-if (preg_match(',^(.*/)?spip_acces_doc\.,', (string)$_SERVER['REQUEST_URI'])) {
-	$file = addslashes((string)$_GET['file']);
+if (isset($_SERVER['REQUEST_URI'])) {
+	if (preg_match(',^(.*/)?spip_acces_doc\.,', (string)$_SERVER['REQUEST_URI'])) {
+		$file = addslashes((string)$_GET['file']);
+	}
 }
 
 /*
@@ -335,12 +337,19 @@ and $_REQUEST['action'] == 'configurer') {
 		}
 	}
 }
+if (isset($_REQUEST['action'])
+and $_REQUEST['action'] == 'ordonner_liens_documents'
+and isset($_REQUEST['ordre'])
+and is_string($_REQUEST['ordre'])){
+	$ecran_securite_raison = "ordre a la chaine";
+}
+
 
 /*
  * Bloque les requêtes contenant %00 (manipulation d'include)
  */
 if (strpos(
-	@get_magic_quotes_gpc() ?
+	(function_exists('get_magic_quotes_gpc') and @get_magic_quotes_gpc()) ?
 		stripslashes(serialize($_REQUEST)) : serialize($_REQUEST),
 	chr(0)
 ) !== false)
@@ -475,6 +484,13 @@ and $_REQUEST['reinstall'] == 'oui')
 	$ecran_securite_raison = 'reinstall=oui';
 
 /*
+ * Pas d'action pendant l'install
+ */
+if (isset($_REQUEST['exec']) and $_REQUEST['exec'] === 'install' and isset($_REQUEST['action'])) {
+	$ecran_securite_raison = 'install&action impossibles';
+}
+
+/*
  * Échappement xss referer
  */
 if (isset($_SERVER['HTTP_REFERER']))
@@ -489,9 +505,21 @@ if (isset($_SERVER['HTTP_X_FORWARDED_HOST']))
 
 
 /*
+ * Pas d'erreur dans l'erreur
+ */
+if (isset($_REQUEST['var_erreur']) and isset($_REQUEST['page']) and $_REQUEST['page'] === 'login') {
+	if (strlen($_REQUEST['var_erreur']) !== strcspn($_REQUEST['var_erreur'], '<>'))
+		$ecran_securite_raison = 'var_erreur incorrecte';
+}
+
+
+/*
  * Réinjection des clés en html dans l'admin r19561
  */
-if (strpos($_SERVER['REQUEST_URI'], "ecrire/") !== false or isset($_REQUEST['var_memotri'])){
+if (
+	(isset($_SERVER['REQUEST_URI']) and strpos($_SERVER['REQUEST_URI'], "ecrire/") !== false)
+	or isset($_REQUEST['var_memotri'])
+){
 	$zzzz = implode("", array_keys($_REQUEST));
 	if (strlen($zzzz) != strcspn($zzzz, '<>"\''))
 		$ecran_securite_raison = 'Cle incorrecte en $_REQUEST';
@@ -577,3 +605,4 @@ if (
 	header("Content-Type: text/html");
 	die("<html><title>Status 429: Too Many Requests</title><body><h1>Status 429</h1><p>Too Many Requests (try again soon)</p></body></html>");
 }
+
